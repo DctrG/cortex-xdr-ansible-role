@@ -1,0 +1,42 @@
+---
+- name: get XDR version.txt file contents
+  shell: cat /opt/traps/version.txt
+  register: xdr_version_contents
+  changed_when: false
+  ignore_errors: yes
+- name: set xdr_installed, xdr_installed_version (null), xdr_status (null), xdr_service_status (null)
+  ansible.builtin.set_fact:
+    xdr_installed: false
+    xdr_status:
+    xdr_installed_version: 
+    xdr_service_status:
+    xdr_cytool_regex: '^\s+(pmd)\s+\d+\s+(\S+)\s+(\S+)'
+    xdr_version_regex: '^cortex-agent-(\d+.\d+.\d+.\d+)'
+- name: set xdr_installed
+  ansible.builtin.set_fact:
+    xdr_installed_version: "{{ xdr_version_contents.stdout | regex_search(xdr_version_regex, '\\1') | first | lower }}"
+    xdr_installed: "{{ xdr_version_contents.stdout != ''}}"
+  when: xdr_version_contents.stdout is defined and xdr_version_contents.stdout is match(xdr_version_regex)
+
+- block:
+  - name: get cytool status
+    shell:
+      /opt/traps/bin/cytool runtime query
+    register: xdr_cytool_status
+    changed_when: false
+    ignore_errors: yes
+  - name: get pmd running status
+    ansible.builtin.set_fact:
+      xdr_service_status: "{{ item | regex_search(xdr_cytool_regex,'\\3') | first }}"
+    when: item | regex_search(xdr_cytool_regex)
+    with_items:
+      - "{{ xdr_cytool_status.stdout_lines }}"
+  when: xdr_installed|bool
+
+- name: set xdr_results
+  ansible.builtin.set_fact:
+    xdr_results:
+      xdr_installed: "{{ xdr_installed }}"
+      xdr_installed_version: "{{ xdr_installed_version }}"
+      xdr_status: "{{ xdr_service_status }}"
+      xdr_endpoint_registered: "{{ xdr_endpoint_registered }}"

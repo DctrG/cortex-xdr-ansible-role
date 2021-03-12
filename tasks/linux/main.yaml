@@ -1,0 +1,10 @@
+---
+- include_vars: vars/linux.yaml
+- name: Validate supported xdr_state
+  assert:
+    that:
+      - xdr_state|lower in ["present", "absent", "check"]
+    fail_msg: "The state '{{ xdr_state|lower }}' is not supported."
+    quiet: true
+
+- include_tasks: "{{ xdr_state|lower }}.yaml"

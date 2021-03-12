@@ -1,0 +1,4 @@
+xdr_version_windows: 7.3.0.16740
+xdr_service_name: cyserver
+xdr_temp_path: C:\temp\cortex_xdr
+xdr_msi_product_id: "{438C903A-8D5D-4809-B757-0E7788A3D423}"

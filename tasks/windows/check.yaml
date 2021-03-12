@@ -1,0 +1,35 @@
+---
+- name: check if XDR agent is installed
+  win_service:
+    name: "{{ xdr_service_name }}"
+  register: xdr_svc
+
+- name: set xdr_installed, xdr_installed_version (null), xdr_status (null)
+  ansible.builtin.set_fact:
+    xdr_installed: "{{ xdr_svc.exists }}"
+    xdr_installed_version:
+    xdr_status:
+
+- block:
+    - name: set xdr_service_path
+      ansible.builtin.set_fact:
+        xdr_service_path: "{{ xdr_svc.path|regex_search('[a-z](.*)(.exe)(?i)') }}"
+
+    - name: get installed XDR agent version
+      win_file_version:
+        path: "{{ xdr_service_path }}"
+      register: xdr_file_version
+
+    - name: set xdr_installed_version
+      ansible.builtin.set_fact:
+        xdr_installed_version: "{{ xdr_file_version.win_file_version.product_version }}"
+        xdr_status: "{{ xdr_svc.state }}"
+  when: xdr_installed|bool
+
+- name: set xdr_results
+  ansible.builtin.set_fact:
+    xdr_results:
+      xdr_installed: "{{ xdr_installed }}"
+      xdr_installed_version: "{{ xdr_installed_version }}"
+      xdr_status: "{{ xdr_status }}"
+      xdr_endpoint_registered: "{{ xdr_endpoint_registered }}"

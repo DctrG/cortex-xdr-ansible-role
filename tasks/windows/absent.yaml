@@ -1,0 +1,27 @@
+---
+- include_tasks: check.yaml
+
+- block:
+  - include_tasks: common/get_xdr_agent_download_url.yaml
+  - name: create temporary xdr directory
+    win_file:
+      path: "{{xdr_temp_path}}"
+      state: directory
+  - ansible.builtin.set_fact:
+      xdr_msi_location: "{{xdr_temp_path}}\\{{xdr_agent_filename}}"
+  - name: download installer
+    win_get_url:
+      url: "{{xdr_agent_download_url}}"
+      dest: "{{xdr_msi_location}}"
+      headers: "{{ xdr_auth_headers }}"
+  - name: cytool protect disable
+    win_shell: |
+      "{{ xdr_uninstall_password }}" | &"C:\Program Files\Palo Alto Networks\Traps\cytool.exe" protect disable
+  - name: uninstall XDR
+    win_package:
+      path: "{{xdr_msi_location}}"
+      product_id: "{{xdr_msi_product_id}}"
+      arguments: "/l*v {{xdr_temp_path}}\\agentuninstall.log /qn"
+      state: absent
+  - include_tasks: check.yaml
+  when: xdr_installed|bool

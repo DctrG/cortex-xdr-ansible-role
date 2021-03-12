@@ -1,0 +1,28 @@
+- ansible.builtin.set_fact:
+    xdr_endpoint_registered: false
+    xdr_api_request:
+      request_data:
+        search_from: 0
+        search_to: 1
+        filters:
+          - 
+            field: hostname
+            operator: in
+            value: 
+              - "{{ ansible_facts['hostname'].split('.')[0] }}"
+- name: get XDR endpoint by hostname
+  delegate_to: localhost
+  become: no
+  uri:
+    url: "{{ xdr_base_uri }}/public_api/v1/endpoints/get_endpoint/"
+    method: POST
+    return_content: yes
+    headers: "{{ xdr_auth_headers }}"
+    body_format: json
+    body: "{{ xdr_api_request }}"
+  register: endpoint_information
+- name: set XDR endpoint facts
+  ansible.builtin.set_fact:
+    xdr_endpoint_registered: true
+    xdr_agent_endpoint: "{{ endpoint_information.json.reply.endpoints[0] }}"
+  when: (endpoint_information.json.reply.endpoints is defined) and (endpoint_information.json.reply.endpoints|length > 0)

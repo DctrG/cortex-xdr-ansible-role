@@ -1,0 +1,14 @@
+- name: calculate nonce and timestamp for xdr auth key
+  ansible.builtin.set_fact:
+    xdr_nonce: "{{ lookup('password', '/dev/null chars=ascii_lowercase,digits length=64') }}"
+    xdr_timestamp: "{{ (((ansible_date_time.iso8601 + '+00:00') | to_datetime('%Y-%m-%dT%H:%M:%SZ%z')).timestamp()|int * 1000) - 12 }}"
+- name: calculate auth key
+  ansible.builtin.set_fact:
+    xdr_auth_key: "{{ xdr_api_key_advanced }}{{ xdr_nonce }}{{ xdr_timestamp }}"
+- name: set auth headers
+  ansible.builtin.set_fact:
+    xdr_auth_headers:
+      "x-xdr-timestamp": "{{ xdr_timestamp }}"
+      "x-xdr-nonce": "{{ xdr_nonce }}"
+      "x-xdr-auth-id": "{{ xdr_api_key_id }}"
+      "Authorization": "{{ xdr_auth_key | hash('sha256') }}"

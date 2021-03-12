@@ -1,0 +1,67 @@
+- name: SH
+  ansible.builtin.set_fact:
+    xdr_agent_filename: "{{xdr_agent_installer_name}}.sh"
+    xdr_agent_distribution_id: "{{xdr_linux_distribution_id}}"
+    xdr_install_method: sh
+    xdr_package_type: sh
+    xdr_temp_path: "{{xdr_linux_temp_path}}"
+- name: DEB
+  ansible.builtin.set_fact:
+    xdr_agent_filename: "{{xdr_agent_installer_name}}.deb"
+    xdr_agent_distribution_id: "{{xdr_linux_distribution_id}}"
+    xdr_install_method: deb
+    xdr_package_type: deb
+    xdr_temp_path: "{{xdr_linux_temp_path}}"
+  when: ansible_facts['distribution'] == 'Debian' or ansible_facts['distribution'] == 'Ubuntu'
+- name: RHEL
+  ansible.builtin.set_fact:
+    xdr_agent_filename: "{{xdr_agent_installer_name}}.rpm"
+    xdr_agent_distribution_id: "{{xdr_linux_distribution_id}}"
+    xdr_install_method: rpm
+    xdr_package_type: rpm
+    xdr_temp_path: "{{xdr_linux_temp_path}}"
+  when: ansible_facts['distribution'] == 'RedHat' or ansible_facts['distribution'] == 'CentOS' or ansible_facts['distribution'] == 'Amazon'
+- name: WINDOWS 64bit
+  ansible.builtin.set_fact:
+    xdr_agent_filename: "{{xdr_agent_installer_name}}.msi"
+    xdr_agent_distribution_id: "{{xdr_windows_distribution_id}}"
+    xdr_install_method: msi
+    xdr_package_type: x64
+    xdr_temp_path: "{{xdr_windows_temp_path}}"
+  when:
+    ansible_facts['os_family'] == 'Windows' and ansible_facts['architecture'] == '64-bit'
+- name: WINDOWS 32bit
+  ansible.builtin.set_fact:
+    xdr_agent_filename: "{{xdr_agent_installer_name}}.msi"
+    xdr_agent_distribution_id: "{{xdr_windows_distribution_id}}"
+    xdr_install_method: msi
+    xdr_package_type: x86
+    xdr_temp_path: "{{xdr_windows_temp_path}}"
+  when:
+    ansible_facts['os_family'] == 'Windows' and ansible_facts['architecture'] == '32-bit'
+- name: set request body
+  set_fact:
+    xdr_get_dist_url_request_data:
+      request_data:
+        distribution_id: "{{ xdr_agent_distribution_id }}"
+        package_type: "{{ xdr_package_type }}"
+- name: get XDR agent download uri
+  delegate_to: localhost
+  become: no
+  uri:
+    url: "{{ xdr_base_uri }}/public_api/v1/distributions/get_dist_url/"
+    method: POST
+    return_content: yes
+    headers: "{{ xdr_auth_headers }}"
+    body_format: json
+    body: "{{ xdr_get_dist_url_request_data | to_json }}"
+  register: package_data
+  ignore_errors: yes
+- name: register download URL Fact
+  set_fact:
+    xdr_agent_download_url: "{{ package_data.json.reply.distribution_url }}"
+  when: package_data.json.reply.distribution_url is defined
+- name: report errors
+  fail:
+    msg: "Error - {{ package_data.json.reply.err_extra | default('unknown error getting package URL') }} Request: {{ xdr_get_dist_url_request_data | to_json }}"
+  when: package_data.status != 200

@@ -1,0 +1,10 @@
+---
+- include_tasks: check.yaml
+
+- block:
+  - name: run agent uninstall
+    package:
+      name: cortex-agent
+      state: absent
+  - include_tasks: check.yaml
+  when: xdr_installed|bool or xdr_force|bool

@@ -1,0 +1,18 @@
+---
+- include_vars: common.yaml
+- name: Gather host facts
+  setup:
+    gather_subset: min
+- include_tasks: common/set_api_headers.yaml
+- include_tasks: common/get_xdr_endpoint_status.yaml
+- include_tasks: linux/main.yaml
+  when:
+    - ansible_os_family|lower == "redhat" or
+      ansible_os_family|lower == "debian"
+
+- include_tasks: windows/main.yaml
+  when: ansible_os_family|lower == "windows"
+
+- name: show xdr results - debug
+  debug:
+    msg: "{{ xdr_results }}"

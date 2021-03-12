@@ -1,0 +1,38 @@
+---
+- include_tasks: check.yaml
+
+- block:
+  - include_tasks: common/get_xdr_agent_download_url.yaml
+  - name: create temporary directory
+    file:
+      path: "{{xdr_temp_path}}"
+      state: directory
+      mode: "0755"
+  - name: set agent download path
+    ansible.builtin.set_fact:
+      xdr_agent_path: "{{xdr_temp_path}}/{{xdr_agent_filename}}"
+  - name: download agent
+    get_url:
+      url: "{{xdr_agent_download_url}}"
+      dest: "{{xdr_agent_path}}"
+      headers: "{{ xdr_auth_headers }}"
+  - name: install agent - rpm
+    yum:
+      name: "{{xdr_agent_path}}"
+    when: xdr_install_method == 'rpm'
+  - name: install agent - deb
+    apt:
+      deb: "{{xdr_agent_path}}"
+    when: xdr_install_method == 'deb'
+  - name: install agent - sh
+    shell: |
+      cd /tmp
+      chmod +x {{xdr_agent_path}}
+      xdr_agent_path
+    when: xdr_install_method == 'sh'
+  - include_tasks: check.yaml
+
+  when: >
+    not xdr_installed|bool or
+    xdr_installed_version|default(0,true) is version(xdr_version_linux, operator='<') or
+    xdr_force|bool
