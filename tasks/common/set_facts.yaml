@@ -1,0 +1,36 @@
+- name: SH
+  ansible.builtin.set_fact:
+    xdr_agent_filename: "{{xdr_agent_installer_name}}.sh"
+    xdr_agent_distribution_id: "{{xdr_linux_distribution_id}}"
+    xdr_install_method: sh
+    xdr_package_type: sh
+- name: DEB
+  ansible.builtin.set_fact:
+    xdr_agent_filename: "{{xdr_agent_installer_name}}.deb"
+    xdr_agent_distribution_id: "{{xdr_linux_distribution_id}}"
+    xdr_install_method: deb
+    xdr_package_type: deb
+  when: ansible_facts['distribution'] == 'Debian' or ansible_facts['distribution'] == 'Ubuntu'
+- name: RHEL
+  ansible.builtin.set_fact:
+    xdr_agent_filename: "{{xdr_agent_installer_name}}.rpm"
+    xdr_agent_distribution_id: "{{xdr_linux_distribution_id}}"
+    xdr_install_method: rpm
+    xdr_package_type: rpm
+  when: ansible_facts['distribution'] == 'RedHat' or ansible_facts['distribution'] == 'CentOS' or ansible_facts['distribution'] == 'Amazon'
+- name: WINDOWS 64bit
+  ansible.builtin.set_fact:
+    xdr_agent_filename: "{{xdr_agent_installer_name}}.msi"
+    xdr_agent_distribution_id: "{{xdr_windows_distribution_id}}"
+    xdr_install_method: msi
+    xdr_package_type: x64
+  when:
+    ansible_facts['os_family'] == 'Windows' and ansible_facts['architecture'] == '64-bit'
+- name: WINDOWS 32bit
+  ansible.builtin.set_fact:
+    xdr_agent_filename: "{{xdr_agent_installer_name}}.msi"
+    xdr_agent_distribution_id: "{{xdr_windows_distribution_id}}"
+    xdr_install_method: msi
+    xdr_package_type: x86
+  when:
+    ansible_facts['os_family'] == 'Windows' and ansible_facts['architecture'] == '32-bit'

@@ -5,6 +5,7 @@
     gather_subset: min
 - include_tasks: common/set_api_headers.yaml
 - include_tasks: common/get_xdr_endpoint_status.yaml
+- include_tasks: common/set_facts.yaml
 - include_tasks: linux/main.yaml
   when:
     - ansible_os_family|lower == "redhat" or

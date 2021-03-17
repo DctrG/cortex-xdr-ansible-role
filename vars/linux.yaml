@@ -1,2 +1,2 @@
 xdr_version_linux: 7.3.0.16397
-xdr_temp_path: /tmp/cortex_xdr
+xdr_linux_temp_path: /tmp/cortex_xdr

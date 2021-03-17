@@ -2,9 +2,14 @@
 - include_tasks: check.yaml
 
 - block:
-  - name: run agent uninstall
+  - name: uninstall agent - package
     package:
       name: cortex-agent
       state: absent
+    when: xdr_install_method != 'sh'
+  - name: uninstall agent - sh
+    shell: |
+      xdr_agent_path
+    when: xdr_install_method == 'sh'
   - include_tasks: check.yaml
   when: xdr_installed|bool or xdr_force|bool
