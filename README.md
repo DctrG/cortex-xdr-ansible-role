@@ -50,7 +50,7 @@ The version variables are only used for determining if an agent needs to be upgr
     xdr_uninstall_password: 'secretpassword'
   tasks:
     - include_role: 
-        name: ansible-role-xdr-agent
+        name: cortex-xdr-ansible-role
         
 ```
 
