@@ -16,10 +16,10 @@ Available variables are listed below, along with default values (see `defaults/m
 
 | Variable     | Description                                                                                                                             | Default   | Required |
 | ------------ | --------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------ |
-| `xdr_state` | Whether the agent should be installed `present` or not `absent`. `check` can also be specified to just check if the agent is installed. | `present` | N |
-| `xdr_force` | Force the installation or removal of the agent.                                                                                         | `false`   | N  |
-| `xdr_base_uri` | Path to Palo Alto XDR cloud instance. |  | Y |
-| `xdr_linux_distribution_id` | Distribution ID for Linux package in XDR. |  | Y |
+| `xdr_state` | Whether the agent should be installed `present` or not `absent`. `check` can also be specified to just check if the agent is installed | `present` | N |
+| `xdr_force` | Force the installation or removal of the agent                                                                                         | `false`   | N  |
+| `xdr_base_uri` | Path to Palo Alto Networks Cortex XDR Cloud instance |  | Y |
+| `xdr_linux_distribution_id` | Distribution ID for Linux package in XDR |  | Y |
 | `xdr_windows_distribution_id` | Distribution ID for Windows package in XDR |  | Y |
 | `xdr_api_key_id` | ID for XDR API Token |  | Y |
 | `xdr_api_key_advanced` | Advanced API key for XDR API. Must have Ansible profile |  | Y |
@@ -39,16 +39,15 @@ The version variables are only used for determining if an agent needs to be upgr
 
 ```yaml
 ---
-- name: Install XDR Agent
+- name: Install Cortex XDR Agent
   hosts: all
   vars:
     xdr_state: present
     xdr_base_uri: https://api-myxdrdomain.xdr.ca.paloaltonetworks.com
-    xdr_linux_distribution_id: 5806d7c4f01a4e57a1cc18caacdd9f5d
     xdr_windows_distribution_id: 9fe8e474517144c0a31085727153587b
     xdr_api_key_id: 1
-    xdr_api_key_advanced: somekeygoeshere
-    xdr_uninstall_password: 'aposdkpoaksd'
+    xdr_api_key_advanced: apikey
+    xdr_uninstall_password: 'secretpassword'
   tasks:
     - include_role: 
         name: ansible-role-xdr-agent

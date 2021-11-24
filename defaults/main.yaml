@@ -4,3 +4,4 @@ xdr_force: false
 xdr_installed:
 xdr_installed_version:
 xdr_status:
+xdr_linux_distribution_id: 

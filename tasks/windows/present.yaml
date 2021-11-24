@@ -5,10 +5,10 @@
   - include_tasks: common/get_xdr_agent_download_url.yaml
   - name: create temp install directory
     win_file:
-      path: "{{ xdr_temp_path }}"
+      path: "{{ xdr_windows_temp_path }}"
       state: directory
   - ansible.builtin.set_fact:
-      xdr_msi_location: "{{ xdr_temp_path }}\\{{ xdr_agent_filename }}"
+      xdr_msi_location: "{{ xdr_windows_temp_path }}\\{{ xdr_agent_filename }}"
   - name: download installer
     win_get_url:
       url: "{{ xdr_agent_download_url }}"
@@ -18,7 +18,7 @@
     win_package:
       path: "{{ xdr_msi_location }}"
       product_id: "{{ xdr_msi_product_id }}"
-      arguments: "/l*v {{ xdr_temp_path }}\\agentinstall.log /qn"
+      arguments: "/l*v {{ xdr_windows_temp_path }}\\agentinstall.log /qn"
   when: >
     not xdr_installed|bool or
     xdr_installed_version|default(0,true) is version(xdr_version_windows, operator='<') or
