@@ -18,7 +18,7 @@
     win_package:
       path: "{{ xdr_msi_location }}"
       product_id: "{{ xdr_msi_product_id }}"
-      arguments: "/l*v {{ xdr_windows_temp_path }}\\agentinstall.log /qn TS_ENABLED=1"
+      arguments: "/l*v {{ xdr_windows_temp_path }}\\agentinstall.log /qn {{ xdr_install_type }}"
   when: >
     not xdr_installed|bool or
     xdr_installed_version|default(0,true) is version(xdr_version_windows, operator='<') or
