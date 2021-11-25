@@ -33,3 +33,4 @@
       xdr_installed_version: "{{ xdr_installed_version }}"
       xdr_status: "{{ xdr_status }}"
       xdr_endpoint_registered: "{{ xdr_endpoint_registered }}"
+      xdr_install_type: "{{ xdr_install_type }}"

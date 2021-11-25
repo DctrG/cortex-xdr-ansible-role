@@ -24,7 +24,7 @@
     xdr_agent_distribution_id: "{{xdr_windows_distribution_id}}"
     xdr_install_method: msi
     xdr_package_type: x64
-    xdr_install_type: "{{xdr_install_type}}"
+    xdr_install_type: "{{xdr_install_type | default() }}"
   when:
     ansible_facts['os_family'] == 'Windows' and ansible_facts['architecture'] == '64-bit'
 - name: WINDOWS 32bit
@@ -33,6 +33,6 @@
     xdr_agent_distribution_id: "{{xdr_windows_distribution_id}}"
     xdr_install_method: msi
     xdr_package_type: x86
-    xdr_install_type: "{{xdr_install_type}}"
+    xdr_install_type: "{{xdr_install_type | default() }}"
   when:
     ansible_facts['os_family'] == 'Windows' and ansible_facts['architecture'] == '32-bit'
