@@ -27,9 +27,10 @@ Available variables are listed below, along with default values (see `defaults/m
 | `xdr_windows_temp_path` | Temporary path on Windows for installer and logs | C:\temp\cortex | N |
 | `xdr_linux_temp_path` | Temporary path on Linux for installer and logs | /tmp/cortex | N |
 | `xdr_msi_product_id` | Windows MSI ID for Cortex Agent | {438C903A-8D5D-4809-B757-0E7788A3D423} | N |
-| `xdr_uninstall_password` | Uninstall password only required for Windows agent removal. |  | ? |
+| `xdr_uninstall_password` | Uninstall password only required for Windows agent removal |  | ? |
 | `xdr_version_linux` | Windows agent version being deployed | 7.3.0.16397 | N |
 | `xdr_version_windows` | Linux agent version being deployed | 7.3.0.16740 | N |
+| `xdr_install_type` | Accepted values are 'vdi' for VDI_ENABLED=1 and 'ts' for TS_ENABLED=1 | Standard | N |
 
 The version variables are only used for determining if an agent needs to be upgraded. If the installed agent version is less than the versions specified the agent will be upgraded. (Forced install)
 
