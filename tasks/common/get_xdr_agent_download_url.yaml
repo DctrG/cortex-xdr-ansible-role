@@ -10,6 +10,7 @@
   uri:
     url: "{{ xdr_base_uri }}/public_api/v1/distributions/get_dist_url/"
     method: POST
+    validate_certs: no
     return_content: yes
     headers: "{{ xdr_auth_headers }}"
     body_format: json
